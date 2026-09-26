@@ -1,120 +1,110 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import Navbar from "./components/Navbar"
+import CourseCard from "./components/CourseCard"
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const courses = [
+    {
+      title: "Web Development",
+      rating: "4.8",
+      price: "999",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+    },
+    {
+      title: "Python Programming",
+      rating: "4.7",
+      price: "799",
+      image: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935"
+    },
+    {
+      title: "UI/UX Design",
+      rating: "4.6",
+      price: "699",
+      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5"
+    }
+  ]
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      <Navbar />
+
+      {/* Hero Section */}
+
+      <section className="py-5 bg-light">
+
+        <div className="container">
+
+          <div className="row align-items-center">
+
+            <div className="col-md-6">
+
+              <h1 className="display-4 fw-bold">
+                Learn Skills.
+                <br />
+                Build Your Future.
+              </h1>
+
+              <p className="lead mt-3">
+                Learn from practical online courses and
+                build real-world skills.
+              </p>
+
+              <button className="btn btn-primary btn-lg mt-2">
+                Explore Courses
+              </button>
+
+            </div>
+
+            <div className="col-md-6 text-center">
+
+              <div className="p-5">
+                <h2>🎓</h2>
+                <h3>Start Learning Today</h3>
+                <p>
+                  Upgrade your skills with SkillNest.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+
       </section>
 
-      <div className="ticks"></div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {/* Popular Courses */}
+
+      <section className="py-5">
+
+        <div className="container">
+
+          <h2 className="text-center fw-bold mb-4">
+            Popular Courses
+          </h2>
+
+          <div className="row g-4">
+
+            {courses.map((course, index) => (
+              <div className="col-md-4" key={index}>
+
+                <CourseCard
+                  title={course.title}
+                  rating={course.rating}
+                  price={course.price}
+                  image={course.image}
+                />
+
+              </div>
+            ))}
+
+          </div>
+
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
     </>
   )
 }
