@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 
 function LearnCourse() {
   const { courseSlug } = useParams();
-
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [enrollment, setEnrollment] = useState(null);
@@ -23,7 +22,6 @@ function LearnCourse() {
         "React Introduction"
       ]
     },
-
     javascript: {
       title: "JavaScript",
       lessons: [
@@ -34,7 +32,6 @@ function LearnCourse() {
         "DOM Manipulation"
       ]
     },
-
     "python-programming": {
       title: "Python Programming",
       lessons: [
@@ -45,7 +42,6 @@ function LearnCourse() {
         "Functions"
       ]
     },
-
     database: {
       title: "Database",
       lessons: [
@@ -56,7 +52,6 @@ function LearnCourse() {
         "Database Relationships"
       ]
     },
-
     "ui-ux-design": {
       title: "UI/UX Design",
       lessons: [
@@ -67,7 +62,6 @@ function LearnCourse() {
         "User Experience"
       ]
     },
-
     "cloud-computing": {
       title: "Cloud Computing",
       lessons: [
@@ -82,7 +76,6 @@ function LearnCourse() {
 
   const course = courses[courseSlug];
 
-
   useEffect(() => {
     if (!user) {
       return;
@@ -90,7 +83,6 @@ function LearnCourse() {
 
     fetchEnrollment();
   }, []);
-
 
   async function fetchEnrollment() {
     try {
@@ -115,14 +107,12 @@ function LearnCourse() {
       }
 
       setEnrollment(currentEnrollment);
-
     } catch (error) {
       setError("Unable to connect to the server.");
     } finally {
       setLoading(false);
     }
   }
-
 
   async function completeLesson() {
     if (!enrollment) {
@@ -136,8 +126,7 @@ function LearnCourse() {
     try {
       setCompleting(true);
 
-      const nextCompleted =
-        enrollment.completedLessons + 1;
+      const nextCompleted = enrollment.completedLessons + 1;
 
       const progress = Math.round(
         (nextCompleted / course.lessons.length) * 100
@@ -165,7 +154,6 @@ function LearnCourse() {
       }
 
       setEnrollment(data.enrollment);
-
     } catch (error) {
       setError("Unable to connect to the server.");
     } finally {
@@ -173,14 +161,13 @@ function LearnCourse() {
     }
   }
 
-
   if (!course) {
     return (
       <>
         <Navbar />
 
         <div className="container text-center py-5">
-          <h2>Course Not Found</h2>
+          <h2 className="fw-bold">Course Not Found</h2>
 
           <Link
             to="/dashboard"
@@ -193,19 +180,21 @@ function LearnCourse() {
     );
   }
 
-
   if (loading) {
     return (
       <>
         <Navbar />
 
         <div className="container text-center py-5">
-          <h4>Loading course...</h4>
+          <div className="spinner-border text-primary mb-3"></div>
+
+          <h5 className="text-muted">
+            Loading course...
+          </h5>
         </div>
       </>
     );
   }
-
 
   if (error) {
     return (
@@ -213,7 +202,6 @@ function LearnCourse() {
         <Navbar />
 
         <div className="container text-center py-5">
-
           <div className="alert alert-danger">
             {error}
           </div>
@@ -224,12 +212,10 @@ function LearnCourse() {
           >
             Back to Dashboard
           </Link>
-
         </div>
       </>
     );
   }
-
 
   const completedLessons = enrollment.completedLessons;
 
@@ -238,17 +224,12 @@ function LearnCourse() {
       ? course.lessons[completedLessons]
       : "Course Completed";
 
-
   return (
     <>
       <Navbar />
 
-      <div className="container py-5">
-
-        {/* Course Header */}
-
-        <div className="mb-4">
-
+      <section className="bg-light py-5">
+        <div className="container">
           <Link
             to="/dashboard"
             className="text-decoration-none"
@@ -256,155 +237,119 @@ function LearnCourse() {
             ← Back to Dashboard
           </Link>
 
-          <h1 className="fw-bold mt-3">
+          <h1 className="fw-bold mt-3 mb-2">
             {course.title}
           </h1>
 
-          <p className="text-muted">
+          <p className="text-muted mb-0">
             Continue your learning journey.
           </p>
-
         </div>
+      </section>
 
-
-        {/* Progress */}
-
+      <div className="container py-4">
         <div className="card border-0 shadow-sm mb-4">
-
-          <div className="card-body">
-
+          <div className="card-body p-4">
             <div className="d-flex justify-content-between mb-2">
-
-              <strong>
-                Course Progress
-              </strong>
+              <strong>Course Progress</strong>
 
               <strong className="text-primary">
                 {enrollment.progress}%
               </strong>
-
             </div>
 
-
-            <div className="progress">
-
+            <div
+              className="progress"
+              style={{ height: "10px" }}
+            >
               <div
                 className="progress-bar"
                 style={{
                   width: `${enrollment.progress}%`
                 }}
-              >
-              </div>
-
+              ></div>
             </div>
-
           </div>
-
         </div>
 
-
         <div className="row g-4">
-
-          {/* Lesson List */}
-
           <div className="col-md-5">
-
             <div className="card border-0 shadow-sm">
-
-              <div className="card-body">
-
+              <div className="card-body p-4">
                 <h4 className="fw-bold mb-3">
                   Course Lessons
                 </h4>
 
+                {course.lessons.map((lesson, index) => {
+                  const completed = index < completedLessons;
+                  const current = index === completedLessons;
 
-                {course.lessons.map(
-                  (lesson, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className={`border rounded p-3 mb-2 ${
+                        current
+                          ? "border-primary bg-light"
+                          : ""
+                      }`}
+                    >
+                      <div className="d-flex align-items-center">
+                        <span className="me-3 small fw-semibold text-muted">
+                          {completed
+                            ? "Completed"
+                            : current
+                            ? "Current"
+                            : "Locked"}
+                        </span>
 
-                    const completed =
-                      index < completedLessons;
+                        <div>
+                          <strong>
+                            Lesson {index + 1}
+                          </strong>
 
-                    const current =
-                      index === completedLessons;
-
-                    return (
-                      <div
-                        key={index}
-                        className={`border rounded p-3 mb-2 ${
-                          current
-                            ? "border-primary"
-                            : ""
-                        }`}
-                      >
-
-                        <div className="d-flex align-items-center">
-
-                          <span className="me-3">
-
-                            {completed
-                              ? "✅"
-                              : current
-                              ? "▶️"
-                              : "🔒"}
-
-                          </span>
-
-                          <div>
-
-                            <strong>
-                              Lesson {index + 1}
-                            </strong>
-
-                            <div className="text-muted">
-                              {lesson}
-                            </div>
-
+                          <div className="text-muted small">
+                            {lesson}
                           </div>
-
                         </div>
-
                       </div>
-                    );
-                  }
-                )}
-
+                    </div>
+                  );
+                })}
               </div>
-
             </div>
-
           </div>
 
-
-          {/* Current Lesson */}
-
           <div className="col-md-7">
-
-            <div className="card border-0 shadow-sm">
-
+            <div className="card border-0 shadow-sm h-100">
               <div className="card-body p-4">
+                <span className="badge bg-primary mb-2">
+                  Current Lesson
+                </span>
 
                 <h3 className="fw-bold">
                   {currentLesson}
                 </h3>
 
-                {completedLessons <
-                course.lessons.length ? (
+                {completedLessons < course.lessons.length ? (
                   <>
                     <div
                       className="bg-dark rounded-3 d-flex align-items-center justify-content-center my-4"
                       style={{ height: "300px" }}
                     >
                       <div className="text-white text-center">
-                        <h1>▶</h1>
-                        <p className="mb-0">
+                        <div className="display-5">
                           Course Video
+                        </div>
+
+                        <p className="mb-0 mt-2">
+                          Video content will be available here.
                         </p>
                       </div>
                     </div>
 
                     <p className="text-muted">
-                      Complete this lesson and
-                      continue to the next lesson.
+                      Complete this lesson and continue
+                      to the next lesson.
                     </p>
 
                     <button
@@ -419,19 +364,14 @@ function LearnCourse() {
                   </>
                 ) : (
                   <div className="alert alert-success mt-4">
-                     Congratulations! You have
-                    completed this course.
+                    Congratulations! You have completed
+                    this course.
                   </div>
                 )}
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
     </>
   );
