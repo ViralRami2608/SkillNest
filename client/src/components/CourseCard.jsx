@@ -1,4 +1,10 @@
+import { Link } from "react-router-dom";
+
 function CourseCard({ title, rating, price, image }) {
+  const courseSlug = title
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
   return (
     <div className="card h-100 shadow-sm border-0">
 
@@ -6,7 +12,10 @@ function CourseCard({ title, rating, price, image }) {
         src={image}
         className="card-img-top"
         alt={title}
-        style={{ height: "180px", objectFit: "cover" }}
+        style={{
+          height: "180px",
+          objectFit: "cover"
+        }}
       />
 
       <div className="card-body">
@@ -23,14 +32,16 @@ function CourseCard({ title, rating, price, image }) {
           ₹{price}
         </h5>
 
-        <button className="btn btn-primary w-100 mt-2">
+        <Link
+          to={`/course-details/${courseSlug}`}
+          className="btn btn-primary w-100 mt-2"
+        >
           View Course
-        </button>
+        </Link>
 
       </div>
-
     </div>
-  )
+  );
 }
 
-export default CourseCard
+export default CourseCard;
