@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,8 +12,9 @@ function Register() {
     confirmPassword: ""
   });
 
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setFormData({
@@ -20,11 +23,11 @@ function Register() {
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    setMessage("");
     setError("");
+    setMessage("");
 
     if (formData.name.trim() === "") {
       setError("Please enter your name.");
@@ -46,7 +49,49 @@ function Register() {
       return;
     }
 
-    setMessage("Registration form is valid!");
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Registration failed.");
+        return;
+      }
+
+      setMessage("Registration successful!");
+
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
+    } catch (error) {
+      setError("Unable to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -83,7 +128,6 @@ function Register() {
 
                 <form onSubmit={handleSubmit} className="mt-4">
 
-                  {/* Name */}
                   <div className="mb-3">
                     <label className="form-label">
                       Full Name
@@ -99,7 +143,6 @@ function Register() {
                     />
                   </div>
 
-                  {/* Email */}
                   <div className="mb-3">
                     <label className="form-label">
                       Email
@@ -115,7 +158,6 @@ function Register() {
                     />
                   </div>
 
-                  {/* Password */}
                   <div className="mb-3">
                     <label className="form-label">
                       Password
@@ -131,7 +173,6 @@ function Register() {
                     />
                   </div>
 
-                  {/* Confirm Password */}
                   <div className="mb-3">
                     <label className="form-label">
                       Confirm Password
@@ -147,12 +188,12 @@ function Register() {
                     />
                   </div>
 
-                  {/* Register Button */}
                   <button
                     type="submit"
                     className="btn btn-primary w-100 mt-2"
+                    disabled={loading}
                   >
-                    Register
+                    {loading ? "Registering..." : "Register"}
                   </button>
 
                 </form>

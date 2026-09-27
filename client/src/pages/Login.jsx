@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -10,6 +12,7 @@ function Login() {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setFormData({
@@ -18,7 +21,7 @@ function Login() {
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     setError("");
@@ -34,7 +37,45 @@ function Login() {
       return;
     }
 
-    setMessage("Login form is valid!");
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Login failed.");
+        return;
+      }
+
+      setMessage("Login successful!");
+
+      // Save user information
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      // Go to dashboard
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+
+    } catch (error) {
+      setError("Unable to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -43,10 +84,10 @@ function Login() {
 
       <div className="container py-5">
         <div className="row justify-content-center">
-
           <div className="col-md-6 col-lg-5">
 
             <div className="card shadow-sm border-0 rounded-4">
+
               <div className="card-body p-4 p-md-5">
 
                 <h2 className="fw-bold text-center">
@@ -69,10 +110,13 @@ function Login() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="mt-4">
+                <form
+                  onSubmit={handleSubmit}
+                  className="mt-4"
+                >
 
-                  {/* Email */}
                   <div className="mb-3">
+
                     <label className="form-label">
                       Email
                     </label>
@@ -85,10 +129,12 @@ function Login() {
                       value={formData.email}
                       onChange={handleChange}
                     />
+
                   </div>
 
-                  {/* Password */}
+
                   <div className="mb-3">
+
                     <label className="form-label">
                       Password
                     </label>
@@ -101,29 +147,36 @@ function Login() {
                       value={formData.password}
                       onChange={handleChange}
                     />
+
                   </div>
+
 
                   <button
                     type="submit"
                     className="btn btn-primary w-100 mt-2"
+                    disabled={loading}
                   >
-                    Login
+                    {loading ? "Logging in..." : "Login"}
                   </button>
 
                 </form>
 
+
                 <p className="text-center mt-4 mb-0">
+
                   Don't have an account?{" "}
+
                   <Link to="/register">
                     Register
                   </Link>
+
                 </p>
 
               </div>
+
             </div>
 
           </div>
-
         </div>
       </div>
     </>

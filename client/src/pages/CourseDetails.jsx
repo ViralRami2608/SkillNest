@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 function CourseDetails() {
   const { courseSlug } = useParams();
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const courses = {
     "web-development": {
@@ -86,6 +91,50 @@ function CourseDetails() {
 
   const course = courses[courseSlug];
 
+  async function handleEnroll() {
+    setMessage("");
+    setError("");
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      setError("Please login before enrolling.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/enrollments",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            courseSlug: courseSlug
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Enrollment failed.");
+        return;
+      }
+
+      setMessage("Course enrolled successfully!");
+
+    } catch (error) {
+      setError("Unable to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   if (!course) {
     return (
       <>
@@ -115,6 +164,7 @@ function CourseDetails() {
 
           {/* Course Image */}
           <div className="col-md-6">
+
             <img
               src={course.image}
               alt={course.title}
@@ -125,7 +175,9 @@ function CourseDetails() {
                 objectFit: "cover"
               }}
             />
+
           </div>
+
 
           {/* Course Information */}
           <div className="col-md-6">
@@ -142,6 +194,7 @@ function CourseDetails() {
               {course.description}
             </p>
 
+
             <div className="mb-3">
 
               <span className="me-3">
@@ -154,6 +207,7 @@ function CourseDetails() {
 
             </div>
 
+
             <h2 className="text-primary fw-bold">
               ₹{course.price}
             </h2>
@@ -162,17 +216,39 @@ function CourseDetails() {
               Level: {course.level}
             </p>
 
-            <Link
-              to="/login"
+
+            {/* Messages */}
+
+            {error && (
+              <div className="alert alert-danger mt-3">
+                {error}
+              </div>
+            )}
+
+            {message && (
+              <div className="alert alert-success mt-3">
+                {message}
+              </div>
+            )}
+
+
+            {/* Enroll Button */}
+
+            <button
               className="btn btn-primary btn-lg mt-3"
+              onClick={handleEnroll}
+              disabled={loading}
             >
-              Enroll Now
-            </Link>
+              {loading ? "Enrolling..." : "Enroll Now"}
+            </button>
 
           </div>
+
         </div>
 
-        {/* Course Description */}
+
+        {/* About Course */}
+
         <div className="row mt-5">
 
           <div className="col-md-8">
@@ -185,16 +261,33 @@ function CourseDetails() {
               {course.description}
             </p>
 
+
             <h4 className="fw-bold mt-4">
               What You Will Learn
             </h4>
 
             <ul className="mt-3">
-              <li>Fundamentals and core concepts</li>
-              <li>Practical examples</li>
-              <li>Hands-on learning</li>
-              <li>Building real-world projects</li>
-              <li>Understanding modern development techniques</li>
+
+              <li>
+                Fundamentals and core concepts
+              </li>
+
+              <li>
+                Practical examples
+              </li>
+
+              <li>
+                Hands-on learning
+              </li>
+
+              <li>
+                Building real-world projects
+              </li>
+
+              <li>
+                Understanding modern development techniques
+              </li>
+
             </ul>
 
           </div>
